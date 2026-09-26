@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" data-env="production">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Itaja Admin · Overview</title>
+  <meta name="description" content="Itaja Admin dashboard — Money In, Money Out, Users." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ================= HEADER ================= -->
+  <header class="header">
+    <div class="container header__inner">
+      <div class="brand">
+        <div class="brand__mark">IT</div>
+        <div>
+          <div class="brand__name">ITAJA</div>
+          <div class="brand__sub">Admin Console</div>
+        </div>
+      </div>
+
+      <div class="header__divider"></div>
+
+      <div class="header__title">
+        <strong data-i18n="overview.label">Overview</strong>
+        <span id="lastRefresh" data-i18n="overview.refresh">Data refreshed —</span>
+      </div>
+
+      <span class="env" data-env-badge>
+        <span class="env__dot"></span>
+        <span id="envLabel">Production</span>
+      </span>
+
+      <div class="header__spacer"></div>
+
+      <!-- Period -->
+      <select class="hcontrol" id="periodSelect" aria-label="Period">
+        <option value="today" data-i18n="period.today">Today</option>
+        <option value="7d" data-i18n="period.7d">Last 7 days</option>
+        <option value="30d" selected data-i18n="period.30d">Last 30 days</option>
+        <option value="mtd" data-i18n="period.mtd">Month to date</option>
+        <option value="custom" data-i18n="period.custom">Custom…</option>
+      </select>
+
+      <!-- Currency -->
+      <select class="hcontrol" id="currencySelect" aria-label="Currency">
+        <option value="ALL" selected data-i18n="ccy.all">All currencies</option>
+        <option value="XAF">XAF</option>
+        <option value="XOF">XOF</option>
+        <option value="EUR">EUR</option>
+        <option value="USD">USD</option>
+      </select>
+
+      <!-- Search -->
+      <button class="hcontrol hcontrol--search" id="searchBtn" type="button">
+        <span aria-hidden="true">⌕</span>
+        <span data-i18n="search.placeholder">Search ref, merchant, PSP…</span>
+      </button>
+
+      <button class="hcontrol" id="langBtn" type="button" aria-label="Language">
+        <span id="langLabel">EN</span>
+      </button>
+
+      <div class="avatar" title="Operations Admin">OA</div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+    <div class="container">
+
+      <!-- Page head -->
+      <div class="page-head">
+        <div>
+          <div class="page-head__eyebrow" data-i18n="overview.eyebrow">Consolidated financial operations</div>
+          <h1 data-i18n="overview.title">Overview</h1>
+          <p class="page-head__desc" data-i18n="overview.desc">
+            Unified view of inbound collections, outbound payouts and merchant activity across the Itaja payment orchestration stack.
+          </p>
+        </div>
+        <div class="row row--gap">
+          <button class="btn" id="exportBtn" type="button" data-i18n="action.export">Export CSV</button>
+          <button class="btn btn--primary" type="button" data-i18n="action.refresh">Refresh data</button>
+        </div>
+      </div>
+
+      <!-- ===== Global KPI band (always visible) ===== -->
+      <section class="grid grid--kpi mb-4" aria-label="Global KPIs">
+        <article class="kpi kpi--success">
+          <div class="kpi__top">
+            <span class="kpi__label" data-i18n="kpi.globalIn">Money In · GMV</span>
+            <span class="kpi__icon" aria-hidden="true">💰</span>
+          </div>
+          <div class="kpi__value"><span data-bind="gmvTotal">0</span> <small id="gmvCcy">XAF</small></div>
+          <div class="kpi__foot">
+            <span class="delta delta--up" data-bind="gmvDelta">+0%</span>
+            <span data-i18n="kpi.vsPrev">vs previous period</span>
+          </div>
+        </article>
+
+        <article class="kpi kpi--gold">
+          <div class="kpi__top">
+            <span class="kpi__label" data-i18n="kpi.globalOut">Money Out · Payouts</span>
+            <span class="kpi__icon" aria-hidden="true">💵</span>
+          </div>
+          <div class="kpi__value"><span data-bind="payoutTotal">0</span> <small id="payoutCcy">XAF</small></div>
+          <div class="kpi__foot">
+            <span class="delta delta--up" data-bind="payoutDelta">+0%</span>
+            <span data-i18n="kpi.vsPrev">vs previous period</span>
+          </div>
+        </article>
+
+        <article class="kpi">
+          <div class="kpi__top">
+            <span class="kpi__label" data-i18n="kpi.globalUsers">Users · Merchants</span>
+            <span class="kpi__icon" aria-hidden="true">👥</span>
+          </div>
+          <div class="kpi__value"><span data-bind="merchantTotal">0</span> <small data-i18n="kpi.active">active</small></div>
+          <div class="kpi__foot">
+            <span class="delta delta--up" data-bind="merchantDelta">+0</span>
+            <span data-i18n="kpi.thisPeriod">this period</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- ===== Tabs ===== -->
+      <nav class="tabs mb-4" role="tablist" aria-label="Domains">
+        <button class="tab" role="tab" id="tab-in" aria-controls="panel-in" aria-selected="true" data-tab="in">
+          💰 <span data-i18n="tab.moneyIn">Money In</span>
+          <span class="tab__badge" data-bind="tabCountIn">0</span>
+        </button>
+        <button class="tab" role="tab" id="tab-out" aria-controls="panel-out" aria-selected="false" data-tab="out">
+          💵 <span data-i18n="tab.moneyOut">Money Out</span>
+          <span class="tab__badge" data-bind="tabCountOut">0</span>
+        </button>
+        <button class="tab" role="tab" id="tab-users" aria-controls="panel-users" aria-selected="false" data-tab="users">
+          👥 <span data-i18n="tab.users">Users</span>
+          <span class="tab__badge" data-bind="tabCountUsers">0</span>
+        </button>
+      </nav>
+
+      <!-- ============================================================= -->
+      <!-- TAB 1 · MONEY IN                                              -->
+      <!-- ============================================================= -->
+      <section role="tabpanel" id="panel-in" aria-labelledby="tab-in" class="stack stack--4">
+
+        <div class="grid grid--kpi-4">
+          <article class="kpi kpi--success">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="in.gmv">GMV</span>
+              <span class="kpi__icon">∑</span>
+            </div>
+            <div class="kpi__value"><span data-bind="inGmv">0</span> <small id="inGmvCcy">XAF</small></div>
+            <div class="kpi__foot"><span class="delta delta--up" data-bind="inGmvDelta">+0%</span><span data-i18n="kpi.vsPrev">vs previous period</span></div>
+          </article>
+
+          <article class="kpi">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="in.success">Success rate</span>
+              <span class="kpi__icon">✓</span>
+            </div>
+            <div class="kpi__value"><span data-bind="inSuccess">0</span><small>%</small></div>
+            <div class="kpi__foot span-field" data-bind="inSuccessRaw">—</div>
+          </article>
+
+          <article class="kpi kpi--danger">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="in.failed">Failed txns</span>
+              <span class="kpi__icon">✕</span>
+            </div>
+            <div class="kpi__value"><span data-bind="inFailed">0</span></div>
+            <div class="kpi__foot"><span data-bind="inFailedShare">0%</span><span data-i18n="in.ofTotal">of total volume</span></div>
+          </article>
+
+          <article class="kpi kpi--gold">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="in.avgTicket">Average ticket</span>
+              <span class="kpi__icon">Ø</span>
+            </div>
+            <div class="kpi__value"><span data-bind="inAvg">0</span> <small id="inAvgCcy">XAF</small></div>
+            <div class="kpi__foot"><span data-i18n="in.perTxn">per successful transaction</span></div>
+          </article>
+        </div>
+
+        <div class="grid grid--split">
+          <!-- Transactions table -->
+          <div class="panel">
+            <div class="panel__head">
+              <div class="panel__title"><span class="tick"></span><span data-i18n="in.txTitle">Transactions</span></div>
+              <div class="panel__hint" data-bind="inTxHint">—</div>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="filters" style="padding:12px 16px;">
+                <div class="seg" data-seg="in">
+                  <button aria-pressed="true" data-filter="all" data-i18n="filter.all">All</button>
+                  <button aria-pressed="false" data-filter="success">Success</button>
+                  <button aria-pressed="false" data-filter="pending">Pending</button>
+                  <button aria-pressed="false" data-filter="failed">Failed</button>
+                </div>
+                <input class="input grow" type="search" placeholder="Search reference…" data-i18n-placeholder="search.ref" />
+              </div>
+              <div class="table-wrap">
+                <table class="data" id="txTable">
+                  <thead>
+                    <tr>
+                      <th data-i18n="col.ref">Reference</th>
+                      <th data-i18n="col.merchant">Merchant</th>
+                      <th data-i18n="col.psp">PSP</th>
+                      <th data-i18n="col.method">Method</th>
+                      <th data-i18n="col.status">Status</th>
+                      <th class="num" data-i18n="col.amount">Amount</th>
+                      <th data-i18n="col.date">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revenue breakdown -->
+          <div class="stack stack--3">
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title"><span class="tick"></span><span data-i18n="in.revTitle">Revenue</span></div>
+                <span class="badge badge--gold" data-i18n="in.derived">derived from GMV</span>
+              </div>
+              <div class="panel__body">
+                <div class="brk">
+                  <div class="brk__row">
+                    <span class="brk__label"><span class="brk__swatch" style="background:var(--green-deep)"></span><span data-i18n="in.gross">Gross revenue</span></span>
+                    <span class="brk__val" data-bind="inGross">0 <em class="brk__sub">XAF</em></span>
+                  </div>
+                  <div class="brk__row">
+                    <span class="brk__label"><span class="brk__swatch" style="background:var(--gold)"></span><span data-i18n="in.fees">Itaja fees</span></span>
+                    <span class="brk__val gold" data-bind="inFees">0 <em class="brk__sub">XAF</em></span>
+                  </div>
+                  <div class="brk__row">
+                    <span class="brk__label"><span class="brk__swatch" style="background:var(--green-500)"></span><span data-i18n="in.net">Net revenue</span></span>
+                    <span class="brk__val" data-bind="inNet">0 <em class="brk__sub">XAF</em></span>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <div class="row row--between muted" style="font-size:11px;">
+                    <span data-i18n="in.takeRate">Itaja take rate</span>
+                    <span class="strong" data-bind="inTakeRate">0%</span>
+                  </div>
+                  <div class="rate mt-2">
+                    <div class="rate__track"><div class="rate__fill" data-bind-width="inTakeRate" style="width:0%"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title"><span class="tick"></span><span data-i18n="in.trend">Daily volume trend</span></div>
+                <span class="panel__hint" data-i18n="in.last14">last 14 days</span>
+              </div>
+              <div class="panel__body">
+                <div class="spark" data-spark="inTrend"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- TAB 2 · MONEY OUT                                             -->
+      <!-- ============================================================= -->
+      <section role="tabpanel" id="panel-out" aria-labelledby="tab-out" class="stack stack--4 hidden">
+
+        <div class="grid grid--kpi-4">
+          <article class="kpi kpi--gold">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="out.volume">Payout volume</span>
+              <span class="kpi__icon">⇢</span>
+            </div>
+            <div class="kpi__value"><span data-bind="outVolume">0</span> <small id="outVolumeCcy">XAF</small></div>
+            <div class="kpi__foot"><span class="delta delta--up" data-bind="outVolumeDelta">+0%</span><span data-i18n="kpi.vsPrev">vs previous period</span></div>
+          </article>
+
+          <article class="kpi">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="out.success">Success rate</span>
+              <span class="kpi__icon">✓</span>
+            </div>
+            <div class="kpi__value"><span data-bind="outSuccess">0</span><small>%</small></div>
+            <div class="kpi__foot" data-bind="outSuccessRaw">—</div>
+          </article>
+
+          <article class="kpi kpi--warning">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="out.pending">Pending payouts</span>
+              <span class="kpi__icon">⏳</span>
+            </div>
+            <div class="kpi__value"><span data-bind="outPending">0</span></div>
+            <div class="kpi__foot"><span data-bind="outPendingValue">—</span><span data-i18n="out.awaiting">awaiting settlement</span></div>
+          </article>
+
+          <article class="kpi kpi--danger">
+            <div class="kpi__top">
+              <span class="kpi__label" data-i18n="out.unrecon">Unreconciled</span>
+              <span class="kpi__icon">⚖</span>
+            </div>
+            <div class="kpi__value"><span data-bind="outUnrecon">0</span></div>
+            <div class="kpi__foot"><span data-bind="outUnreconValue">—</span><span data-i18n="out.diff">ledger vs PSP</span></div>
+          </article>
+        </div>
+
+        <!-- Kudelo orchestration status band -->
+        <div class="status-band">
+          <div class="status-band__icon" aria-hidden="true">⚡</div>
+          <div class="status-band__meta">
+            <strong data-i18n="kudelo.title">Kudelo · Payment orchestration</strong>
+            <span data-bind="kudeloStatus">—</span>
+          </div>
+          <div class="status-band__stats">
+            <div class="status-band__stat">
+              <b data-bind="kudeloPsps">0</b>
+              <span data-i18n="kudelo.psps">PSPs connected</span>
+            </div>
+            <div class="status-band__stat">
+              <b data-bind="kudeloLatency">0 ms</b>
+              <span data-i18n="kudelo.latency">Routing latency</span>
+            </div>
+            <div class="status-band__stat">
+              <b data-bind="kudeloUptime">0%</b>
+              <span data-i18n="kudelo.uptime">24h uptime</span>
+            </div>
+            <div class="status-band__stat">
+              <b data-bind="kudeloLastSync">—</b>
+              <span data-i18n="kudelo.sync">Last data sync</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid--kpi-4">
+          <article class="kpi">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="out.pspCost">PSP cost</span><span class="kpi__icon">⛁</span></div>
+            <div class="kpi__value"><span data-bind="outPspCost">0</span> <small id="pspCostCcy">XAF</small></div>
+            <div class="kpi__foot"><span data-i18n="out.sumFees">Σ PSP fees</span> · <span data-bind="outPspCostRate">0%</span></div>
+          </article>
+          <article class="kpi kpi--success">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="out.liquidity">Liquidity</span><span class="kpi__icon">≋</span></div>
+            <div class="kpi__value"><span data-bind="outLiquidity">0</span> <small id="liquidityCcy">XAF</small></div>
+            <div class="kpi__foot"><span data-i18n="out.sumBalances">Σ PSP balances</span></div>
+          </article>
+          <article class="kpi">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="out.netFlow">Net flow</span><span class="kpi__icon">⇄</span></div>
+            <div class="kpi__value"><span data-bind="outNetFlow">0</span> <small id="netFlowCcy">XAF</small></div>
+            <div class="kpi__foot"><span data-i18n="out.inMinusOut">Money In − Money Out</span></div>
+          </article>
+          <article class="kpi kpi--gold">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="out.coverage">Recon coverage</span><span class="kpi__icon">✓</span></div>
+            <div class="kpi__value"><span data-bind="outCoverage">0</span><small>%</small></div>
+            <div class="kpi__foot"><span data-i18n="out.autoMatched">auto-matched lines</span></div>
+          </article>
+        </div>
+
+        <div class="grid grid--split">
+          <!-- PSP Network -->
+          <div class="panel">
+            <div class="panel__head">
+              <div class="panel__title"><span class="tick"></span><span data-i18n="out.pspTitle">PSP Network</span></div>
+              <span class="panel__hint" data-i18n="out.pspHint">click a row for detail</span>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrap">
+                <table class="data" id="pspTable">
+                  <thead>
+                    <tr>
+                      <th data-i18n="col.psp">PSP</th>
+                      <th data-i18n="col.status">Status</th>
+                      <th class="num" data-i18n="col.volume">Volume</th>
+                      <th class="num" data-i18n="col.fees">Fees</th>
+                      <th class="num" data-i18n="col.balance">Balance</th>
+                      <th class="num" data-i18n="col.cost">Cost %</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reconciliation -->
+          <div class="panel">
+            <div class="panel__head">
+              <div class="panel__title"><span class="tick"></span><span data-i18n="out.reconTitle">Reconciliation</span></div>
+              <span class="badge badge--info" data-i18n="out.ledger">internal ledger</span>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrap">
+                <table class="data" id="reconTable">
+                  <thead>
+                    <tr>
+                      <th data-i18n="col.date">Date</th>
+                      <th data-i18n="col.psp">PSP</th>
+                      <th class="num" data-i18n="col.ledgerAmt">Ledger</th>
+                      <th class="num" data-i18n="col.pspAmt">PSP</th>
+                      <th data-i18n="col.status">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- TAB 3 · USERS                                                 -->
+      <!-- ============================================================= -->
+      <section role="tabpanel" id="panel-users" aria-labelledby="tab-users" class="stack stack--4 hidden">
+
+        <div class="grid grid--kpi-4">
+          <article class="kpi">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="u.kyc">KYC queue</span><span class="kpi__icon">🪪</span></div>
+            <div class="kpi__value"><span data-bind="uKyc">0</span></div>
+            <div class="kpi__foot"><span class="delta delta--down" data-bind="uKycDelta">+0</span><span data-i18n="u.pendingReview">pending review</span></div>
+          </article>
+          <article class="kpi kpi--success">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="u.active">Active merchants</span><span class="kpi__icon">✓</span></div>
+            <div class="kpi__value"><span data-bind="uActive">0</span></div>
+            <div class="kpi__foot"><span data-bind="uActiveShare">0%</span><span data-i18n="u.ofBase">of merchant base</span></div>
+          </article>
+          <article class="kpi kpi--warning">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="u.inactive">Dormant merchants</span><span class="kpi__icon">⏸</span></div>
+            <div class="kpi__value"><span data-bind="uDormant">0</span></div>
+            <div class="kpi__foot"><span data-i18n="u.noActivity">no activity in 30d</span></div>
+          </article>
+          <article class="kpi kpi--gold">
+            <div class="kpi__top"><span class="kpi__label" data-i18n="u.activity">Activity rate</span><span class="kpi__icon">📈</span></div>
+            <div class="kpi__value"><span data-bind="uActivity">0</span><small>%</small></div>
+            <div class="kpi__foot"><span data-i18n="u.weekly">merchants transacting weekly</span></div>
+          </article>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__title"><span class="tick"></span><span data-i18n="u.title">Merchants</span></div>
+            <div class="panel__hint" data-bind="uHint">—</div>
+          </div>
+          <div class="panel__body panel__body--flush">
+            <div class="filters" style="padding:12px 16px;">
+              <div class="seg" data-seg="kyc">
+                <button aria-pressed="true" data-filter="all" data-i18n="filter.all">All</button>
+                <button aria-pressed="false" data-filter="pending">KYC Pending</button>
+                <button aria-pressed="false" data-filter="approved">KYC Approved</button>
+                <button aria-pressed="false" data-filter="rejected">KYC Rejected</button>
+              </div>
+              <input class="input grow" type="search" placeholder="Search merchant…" data-i18n-placeholder="search.merchant" />
+            </div>
+            <div class="table-wrap">
+              <table class="data" id="merchantTable">
+                <thead>
+                  <tr>
+                    <th data-i18n="col.merchant">Merchant</th>
+                    <th data-i18n="col.country">Country</th>
+                    <th data-i18n="col.kyc">KYC</th>
+                    <th data-i18n="col.account">Account status</th>
+                    <th class="num" data-i18n="col.volume">Volume</th>
+                    <th data-i18n="col.lastActivity">Last activity</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>ITaja Admin Console · <span id="buildStamp">build 2026.09</span></span>
+        <span><span data-i18n="foot.ledger">Source: internal ledger + Kudelo orchestration feed</span></span>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<!-- ================= DRAWER ================= -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <header class="drawer__head">
+    <div>
+      <div class="drawer__eyebrow" id="drawerEyebrow">Detail</div>
+      <div class="drawer__title" id="drawerTitle">—</div>
+      <div class="drawer__sub" id="drawerSub">—</div>
+    </div>
+    <button class="drawer__close" id="drawerClose" aria-label="Close">✕</button>
+  </header>
+  <div class="drawer__body" id="drawerBody"></div>
+  <footer class="drawer__foot" id="drawerFoot"></footer>
+</aside>
+
+<script src="assets/js/dashboard.js"></script>
+</body>
+</html>

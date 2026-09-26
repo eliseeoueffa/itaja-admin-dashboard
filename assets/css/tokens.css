@@ -1,0 +1,114 @@
+/* ==========================================================================
+   ITAJA ADMIN · Design Tokens
+   Deep Green · Ivory · White · Gold accent · Rubik
+   Data-dense, rounded cards, minimal fintech aesthetic
+   ========================================================================== */
+
+:root {
+  /* --- Brand core ------------------------------------------------------- */
+  --green-900: #06251C;
+  --green-deep: #0B3D2E;
+  --green-700: #0F4A38;
+  --green-600: #16624A;
+  --green-500: #1E7C5E;
+  --green-tint: #E6EFEA;
+
+  --ivory: #F8F7F2;
+  --ivory-200: #EFEDE4;
+  --white: #FFFFFF;
+
+  --gold: #C8A44A;
+  --gold-strong: #B08D34;
+  --gold-soft: #E4CF92;
+  --gold-tint: #F6EFDC;
+
+  /* --- Text ------------------------------------------------------------- */
+  --text-primary: #12211B;
+  --text-secondary: #4B5B54;
+  --text-muted: #8A968F;
+  --text-on-dark: #F3F7F4;
+  --text-on-dark-muted: #A9C2B8;
+
+  /* --- Semantic --------------------------------------------------------- */
+  --success: #1E8E5A;
+  --success-bg: #E4F3EB;
+  --warning: #C2410C;
+  --warning-bg: #FBEAE0;
+  --danger: #B91C1C;
+  --danger-bg: #FBE6E6;
+  --info: #1D4ED8;
+  --info-bg: #E7ECFC;
+  --neutral: #6B7280;
+  --neutral-bg: #EEF0EF;
+
+  /* --- Surfaces & borders ---------------------------------------------- */
+  --surface: var(--white);
+  --surface-2: var(--ivory);
+  --surface-3: var(--ivory-200);
+  --border: #E3E2DA;
+  --border-strong: #D2D1C7;
+  --border-dark: rgba(255, 255, 255, 0.14);
+
+  /* --- Radii ------------------------------------------------------------ */
+  --r-sm: 8px;
+  --r-input: 10px;
+  --r-card: 16px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* --- Spacing scale (4px base) ---------------------------------------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+
+  /* --- Elevation -------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgba(18, 33, 27, 0.05);
+  --shadow-sm: 0 1px 3px rgba(18, 33, 27, 0.07), 0 1px 2px rgba(18, 33, 27, 0.04);
+  --shadow-md: 0 6px 18px rgba(18, 33, 27, 0.08);
+  --shadow-lg: 0 18px 48px rgba(6, 37, 28, 0.18);
+  --shadow-drawer: -24px 0 60px rgba(6, 37, 28, 0.22);
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-sans: "Rubik", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Rubik", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+
+  --fs-10: 10px;
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-18: 18px;
+  --fs-22: 22px;
+  --fs-28: 28px;
+  --fs-34: 34px;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  --lh-tight: 1.15;
+  --lh-snug: 1.35;
+  --lh-normal: 1.5;
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+
+  /* --- Layout ----------------------------------------------------------- */
+  --header-h: 60px;
+  --kpi-h: 118px;
+  --container-max: 1560px;
+  --drawer-w: 460px;
+  --z-drawer: 60;
+  --z-overlay: 55;
+  --z-header: 50;
+}
